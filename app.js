@@ -13,8 +13,13 @@ app.get('/generate', async (req, res) => {
     }
 
     try {
-        // Remove line breaks from the text
-        text = text.replace(/[\r\n]+/g, ''); // Remove line breaks
+        // Perform additional sanitization of the input text
+        // 1. Replace all types of line breaks: \r, \n
+        // 2. Remove all non-printable characters
+        // 3. Trim any extra spaces
+        text = text.replace(/[\r\n]+/g, ' ') // Replace line breaks with a space
+                   .replace(/[^\x20-\x7E]+/g, '') // Remove non-printable characters
+                   .trim(); // Trim any extra spaces
 
         // Decode the text received in the query string
         text = decodeURIComponent(text);  // Safely decode the text
