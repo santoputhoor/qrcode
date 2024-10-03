@@ -4,19 +4,20 @@ const QRCode = require('qrcode');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Middleware to parse JSON request body for POST requests
-app.use(express.json());
+// Middleware to parse URL-encoded query strings for POST requests
+app.use(express.urlencoded({ extended: true }));
 
 // Helper function to sanitize text by removing line breaks and unwanted characters
 function sanitizeText(text) {
-    return text.replace(/[\r\n]+/g, '') // Strip line breaks
+    return text.replace(/[\r\n]+/g, '') // Remove line breaks
                .replace(/[^\x20-\x7E]+/g, '') // Remove non-printable characters
                .trim(); // Trim extra spaces
 }
 
-// API endpoint to generate QR code from GET or POST requests
-app.get('/generate', async (req, res) => {
-    let text = req.query.text;
+// API endpoint to generate QR code from a query parameter (GET or POST)
+app.all('/generate', async (req, res) => {
+    // Support both GET and POST methods with query parameters
+    let text = req.query.text || req.body.text;
 
     if (!text) {
         return res.status(400).send('Text query parameter is required');
